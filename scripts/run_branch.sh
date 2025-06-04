@@ -1,26 +1,18 @@
 #!/bin/bash
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
 TODAY=$(date +"%Y-%m-%d")
-ONE_WEEK_AGO=$(date -d "7 days ago" +"%Y-%m-%d")
-AUTOPKGTEST_DIR="/root/perfsonar-autopkgtest"
-AUTOPKGTEST_DIR="/home/ppedersen/git/perfsonar-autopkgtest"
-FROM="perfsonar-autopkgtest@example.com"
-REALNAME="System mailer"
-TO="pete.pedersen@geant.org"
+#AUTOPKGTEST_DIR="/root/perfsonar-autopkgtest"
+#AUTOPKGTEST_DIR="/home/ppedersen/git/perfsonar-autopkgtest"
 OS_LIST=( debian-{11,12} ubuntu-{22,24} )
 BASE_DIR=$(dirname $0)
 CONF_DIR=${BASE_DIR}/../conf
-#BRANCH_LIST=( `cat ${CONF_DIR}/repo.list` )
 BRANCH_LIST=( `grep -v '^#' ${CONF_DIR}/repo.list` )
 WWW_REPORTS=/var/www/html/reports
 
-# create hash for results
-declare -A RESULTS
-
-# loop for looping over the different release branch
-# --------------------------------------------------
-for branch in ${BRANCH_LIST[*]}
-do
+branch=$1
+check="\<${branch}\>"
+if [[ ${BRANCH_LIST[@]} =~ ${check} ]]
+then
   echo "starting branch : ${branch}"
   PACKAGE_LIST=( `cat ${CONF_DIR}/${branch}.list` )
   # loop to do the processing of all the containers
@@ -57,7 +49,13 @@ do
     done # for all package list
     echo 
   done # for all OS list
-done # for all branchs
-#exit 1
-
+else
+  echo "ERROR: unknown branch '${branch}' it needs to be one of this:"
+  # ${BRANCH_LIST[@]}"
+  for i in ${BRANCH_LIST[@]}
+  do
+    echo -e "\t${i}"
+  done
+  exit 100
+fi
 

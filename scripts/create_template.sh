@@ -8,9 +8,12 @@ fi
 DISTNAME="${1:-ubuntu}"
 DISTVER="${2:-24.04}"
 BRANCH="${3:perfsonar-release}"
-BRANCH_LIST=( `cat repo.list` )
+BASE_DIR=$(dirname $0)
+CONF_DIR=${BASE_DIR}/../conf
+BRANCH_LIST=( `grep -v '^#' ${CONF_DIR}/repo.list` )
+#BRANCH_LIST=( `cat repo.list` )
 # check we know the branch exists
-if ! grep -E -- "^${BRANCH}$" repo.list > /dev/null
+if ! grep -E -- "^${BRANCH}$" ${CONF_DIR}/repo.list > /dev/null
  then
      echo "'${BRANCH}' is not in repo.list"
      exit 1 
