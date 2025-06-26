@@ -20,8 +20,8 @@ if ! grep -E -- "^${BRANCH}$" ${CONF_DIR}/repo.list > /dev/null
 fi 
 REPO_NAME="${BRANCH}"
 REPO_NAME_GPG="${BRANCH/-[a-z]*-/-}"
-ALIAS="tmp-base-${REPO_NAME}-${DISTNAME}-${DISTVER//\.*}"
-IMAGE_ALIAS="${REPO_NAME}-autopkgtest-${DISTNAME}-${DISTVER//\.*}"
+ALIAS="tmp-base-${BRANCH}-${DISTNAME}-${DISTVER//\.*}"
+IMAGE_ALIAS="${BRANCH}-autopkgtest-${DISTNAME}-${DISTVER//\.*}"
 
 # launch a base OS image 
 if [ ${DISTNAME} == 'ubuntu' ]
