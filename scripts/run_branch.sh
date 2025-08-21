@@ -13,12 +13,14 @@ branch=$1
 check="\<${branch}\>"
 if [[ ${BRANCH_LIST[@]} =~ ${check} ]]
 then
-  echo "starting branch : ${branch}"
+  echo "##starting branch : ${branch}"
   PACKAGE_LIST=( `cat ${CONF_DIR}/${branch}.list` )
+  echo -e "* list of distributions: ${OS_LISTi[*]}"
   # loop to do the processing of all the containers
   # ------------------------------------------------
   for OS in ${OS_LIST[*]}
   do
+    echo -e "### ${OS}"
     LOG_DIR="${WWW_REPORTS}/$TODAY/${branch}/${OS}"
     mkdir -p ${LOG_DIR}
     os_version=${OS/*-/}
@@ -28,11 +30,12 @@ then
     fi
     IMAGE_ALIAS="${branch}-autopkgtest-${OS//\.*}"
     #echo -ne "    $(date -u '+%Y/%m/%d %H:%M') creating base image ${IMAGE_ALIAS}"
-    echo -ne "    creating base image ${IMAGE_ALIAS}"
+    echo -ne "* Creating base image ${IMAGE_ALIAS}"
     bash ${BASE_DIR}/create_template.sh ${OS/-*/} ${os_version} ${branch} &>> /dev/null
     if [ $? -ne 0 ]; then
       echo -e "\t\tFAILED more info in /tmp/create_template.sh.out"
-       exit 10
+       #exit 10
+       continue # skip this one do next OS
     else
       echo -e "\t\tDONE"
     fi
@@ -43,7 +46,7 @@ then
     for PACKAGE in ${PACKAGE_LIST[*]}
     do
       #echo -e "\t`date -u '+%Y/%m/%d %H:%M'` autopkgtest ${PACKAGE} using image ${IMAGE_ALIAS}"
-      echo -e "\n        ${PACKAGE} using image ${IMAGE_ALIAS}"
+      echo -e "\n####${PACKAGE} using image ${IMAGE_ALIAS}"
       autopkgtest -d -U --summary-file=${LOG_DIR}/autopkgtest_${PACKAGE}_summary.txt ${PACKAGE} -- lxd local:${IMAGE_ALIAS} &>> ${LOG_DIR}/autopkgtest_${PACKAGE}_debug.log
       sed -e 's/^/            /' ${LOG_DIR}/autopkgtest_${PACKAGE}_summary.txt | grep -v PASS
     done # for all package list
