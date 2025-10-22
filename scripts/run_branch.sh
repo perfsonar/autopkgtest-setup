@@ -43,11 +43,15 @@ then
     #echo "    starting ${OS}"
     # loop to do each package from list
     # ---------------------------------
+    PCOUNT=${#PACKAGE_LIST[*]}
+    PROGRESS_COUNT=0
     for PACKAGE in ${PACKAGE_LIST[*]}
     do
       #echo -e "\t`date -u '+%Y/%m/%d %H:%M'` autopkgtest ${PACKAGE} using image ${IMAGE_ALIAS}"
-      echo -e "####${PACKAGE} using image ${IMAGE_ALIAS}\n"
+      ((PROGRESS_COUNT=$PROGRESS_COUNT+1))
+      echo -en "#### ${PROGRESS_COUNT}/${PCOUNT} ${PACKAGE} using image ${IMAGE_ALIAS}"
       autopkgtest -d -U --summary-file=${LOG_DIR}/autopkgtest_${PACKAGE}_summary.txt ${PACKAGE} -- lxd local:${IMAGE_ALIAS} &>> ${LOG_DIR}/autopkgtest_${PACKAGE}_debug.log
+      echo -e "\t\tDONE\n"
       sed -e 's/^/            /' ${LOG_DIR}/autopkgtest_${PACKAGE}_summary.txt | grep -v PASS
       echo
     done # for all package list
