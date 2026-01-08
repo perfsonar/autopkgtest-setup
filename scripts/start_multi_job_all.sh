@@ -14,6 +14,8 @@ WAIT_SLEEP=60
 JOB_TOTAL=${#BRANCH_LIST[*]}
 JOB_COUNT=0
 MYNAME=`cat /proc/$$/comm`
+LOG_KEEP=60
+WWW_REPORTS=/var/www/html/reports
 
 # this function will count the number of screen session 
 # and will wait for the count to be bellow ${MAX_JOB}
@@ -40,4 +42,13 @@ do
 done # for all branchs
 #exit 1
 
+# clean-up old directories and file 
+# ----------------------------------
 
+OLD_LIST=( $(ls -d ${WWW_REPORTS}/20*|sed -e 's:.*/::' | sort -rh | tail -n +${LOG_KEEP}  | less ) )
+
+for l in ${OLD_LIST[*]}
+do
+  echo "Removing $l"
+  rm -r ${WWW_REPORTS}/${l} ${WWW_REPORTS}/screen*${l}.{log,html}
+done
