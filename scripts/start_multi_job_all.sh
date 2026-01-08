@@ -45,7 +45,7 @@ done # for all branchs
 # clean-up old directories and file 
 # ----------------------------------
 
-OLD_LIST=( $(ls -d ${WWW_REPORTS}/20*|sed -e 's:.*/::' | sort -rh | tail -n +${LOG_KEEP}  | less ) )
+OLD_LIST=( $(ls -d ${WWW_REPORTS}/20*|sed -e 's:.*/::' | sort -rh | tail -n +${LOG_KEEP}  | sort -h ) )
 
 for l in ${OLD_LIST[*]}
 do
